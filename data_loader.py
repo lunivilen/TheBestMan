@@ -7,11 +7,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class SimpleDatasetLoader(Dataset):
     def __init__(self, df):
-        self.data_x = torch.tensor(df.drop("sales", axis=1).to_numpy(),
+        self.data_x = torch.tensor(df.drop("TARGET", axis=1).to_numpy(),
                                    dtype=torch.float32,
                                    device=device)
 
-        self.data_y = torch.tensor(df["sales"].to_numpy(),
+        self.data_y = torch.tensor(df["TARGET"].to_numpy(),
                                    dtype=torch.float32,
                                    device=device)
 
