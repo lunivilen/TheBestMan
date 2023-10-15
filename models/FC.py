@@ -9,16 +9,16 @@ class FC(nn.Module):
         super(FC, self).__init__()
         # Полносвязные слои
         self.fc1 = nn.Linear(74, 128, device=device)
-        self.fc1_bn = nn.BatchNorm1d(128)
         self.fc2 = nn.Linear(128, 64, device=device)
-        self.fc2_bn = nn.BatchNorm1d(64)
         self.fc3 = nn.Linear(64, 1, device=device)
+        self.fc1_bn = nn.BatchNorm1d(128)
+        self.fc2_bn = nn.BatchNorm1d(64)
         self.sig = nn.Sigmoid()
 
         # Функция активации
         self.relu = nn.PReLU(num_parameters=1, init=0.25).to(device)
 
-        self.dropout = nn.Dropout(0.5)
+        self.dropout = nn.Dropout(0.3)
 
     def forward(self, x):
         # Прямой проход через полносвязные слои
@@ -52,32 +52,6 @@ def train_model(model, train_loader, criterion, optimizer, num_epochs, max_norm=
 
         epoch_loss = running_loss / len(train_loader)
         print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss:.4f}")
-
-
-def top_k_accuracy(model, dataloader):
-    model.eval()
-    deviation = []
-    mse = []
-    criterion = nn.MSELoss()
-    with torch.no_grad():
-        for inputs, target in dataloader:
-            predicted = model(inputs)
-
-            # собираем MSE
-            loss = criterion(predicted, target)
-            mse.append(loss.item())
-
-            # собираем MAPE
-            info = torch.mean(abs((target - predicted) / target))
-            deviation.append(info)
-
-    # рассчитываем среднее отклонение
-    deviation = torch.tensor(deviation)
-    deviation = torch.mean(deviation)
-
-    # рассчитываем среднее mse
-    mse = sum(mse) / len(mse)
-    return deviation, mse
 
 
 def get_prediction(model, data_loader):
